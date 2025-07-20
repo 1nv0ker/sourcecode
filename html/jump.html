@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="referrer" content="no-referrer" />
+  <title>Redirecting...</title>
+</head>
+<body>
+<script>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const targetUrl = params.get('url');
+    const repeat = parseInt(params.get('repeat'), 10) || 0;
+    const time = parseInt(params.get('time'), 10) || 1;
+    const currentRound = parseInt(params.get('r'), 10) || 0;
+
+    if (targetUrl) {
+      document.title = 'Redirecting...';
+      document.body.innerText = `Redirecting round ${currentRound}/${repeat} in ${time} second(s)...`;
+      window.opener = null;
+      setTimeout(() => {
+        if (currentRound < repeat) {
+          const nextUrl = `${location.pathname}?url=${encodeURIComponent(targetUrl)}&repeat=${repeat}&time=${time}&r=${currentRound + 1}`;
+          location.replace(nextUrl);
+        } else {
+          location.replace(targetUrl);
+        }
+      }, time * 1000);
+    } else {
+      document.title = 'Missing URL';
+      document.body.innerText = 'No redirect URL provided.';
+    }
+  })();
+</script>
+</body>
+</html>

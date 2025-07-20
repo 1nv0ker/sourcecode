@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>index</title>
+  <script async src="/sw/main.js"></script>
+
+</head>
+
+<body>
+  index<span id="pageIndex"></span><br>
+  
+  <script>
+    function jump() {
+      const params = new URLSearchParams(window.location.search);
+      let index = parseInt(params.get("index")) || 1;
+      let jumpCount = params.has("j") ? parseInt(params.get("j")) : 3;
+      let stay = params.has("s") ? parseInt(params.get("s")) : 4;
+      let directory = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+      document.getElementById("pageIndex").innerText = index;
+      if (jumpCount > 0 && index < 10) {
+        let nextIndex = index + 1;
+        let nextJumpCount = jumpCount - 1;
+        let domain = location.host;
+        let timestamp = new Date().getTime();
+        let gtagId = params.get("gtag");
+        let nextUrl = `https://${domain}${directory}index${nextIndex}.html?index=${nextIndex}&j=${nextJumpCount}&t=${timestamp}&s=${stay}`;
+        if (gtagId) {
+          nextUrl += `&gtag=${gtagId}`;
+        }
+        setTimeout(() => {
+          window.location.href = nextUrl;
+        }, stay*1000);
+      }
+    }
+    function loadGtag() {
+      const params = new URLSearchParams(window.location.search);
+      const gtagId = params.get("gtag");
+      if (gtagId) {
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag('js', new Date());
+        gtag('config', gtagId);
+      }
+    }
+    loadGtag();
+    jump();
+  </script>
+  
+</body>
+
+</html>
